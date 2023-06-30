@@ -1,13 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import {Canvas} from "@react-three/fiber";
+import Experience from "./Experience";
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Canvas>
+      <Experience/>
+    </Canvas>
   </React.StrictMode>
 );
 
