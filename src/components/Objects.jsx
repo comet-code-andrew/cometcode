@@ -3,8 +3,13 @@ import { useFrame, useThree } from '@react-three/fiber'
 import React, { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
+import {useControls} from "leva";
+import {Galaxy} from "./galaxy";
+
 function Objects() {
   const { height, width } = useThree((state) => state.viewport)
+
+
 
   return (
     <>
@@ -25,6 +30,8 @@ function Objects() {
       <Item color="orange" position={[-width / 12, -height * 2.25, 0.5]}>
         <coneGeometry args={[0.75, 2.5, 12]} />
       </Item>
+
+      <Galaxy position={[1, 100, 100]}/>
     </>
   )
 }
