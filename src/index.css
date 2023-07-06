@@ -22,6 +22,13 @@ h1 {
   margin: 0;
 }
 
-canvas + div {
-  mix-blend-mode: multiply;
+/*canvas + div {*/
+/*  mix-blend-mode: multiply;*/
+/*}*/
+
+.htmlScreen iframe
+{
+  width: 500px;
+  height: 670px;
+  border: none;
 }

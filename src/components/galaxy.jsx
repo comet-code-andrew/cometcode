@@ -5,8 +5,6 @@ import {useControls} from "leva";
 import {useMemo, useRef} from "react";
 
 
-
-
 function Galaxy() {
 
   /**
@@ -15,7 +13,7 @@ function Galaxy() {
   const parameter_options = useMemo(() => {
     return {
       count: {value: 20000, min: 10000, max: 800000, step: 10000},
-      size: {value: 10.0, min: 0, max: 50, step: 2},
+      size: {value: 26.0, min: 0, max: 50, step: 2},
       radius: {value: 5, min: 0, max: 10, step: 2},
       branches: {value: 3, min: 0, max: 10, step: 2},
       spin: {value: 1, min: 0, max: 10, step: 2},
@@ -62,9 +60,6 @@ function Galaxy() {
     scales[i] = Math.random() * 10.0
   }
 
-
-
-
   const galaxyMaterial = useRef()
   useFrame((state, delta) => {
     galaxyMaterial.current.uTime += delta
@@ -72,23 +67,23 @@ function Galaxy() {
 
 
   return (<>
-    <TransformControls>
-      <mesh>
-        <Points positions={positions} >
+
+      <mesh position-y={-1}>
+        <Points positions={positions}>
           <galaxyMaterial ref={galaxyMaterial} uSize={parameters.size} color={colors} key={GalaxyMaterial.key}/>
         </Points>
       </mesh>
-    </TransformControls>
   </>)
 
 }
+
 export {Galaxy}
 
 
 const GalaxyMaterial = shaderMaterial({
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    vertexColors:true,
+    vertexColors: true,
     uSize: 0.01, // TODO: multiply by getPixelRation()
     uTime: 0,
     color: new THREE.Color("blue"),
@@ -104,6 +99,7 @@ const GalaxyMaterial = shaderMaterial({
     varying vec3 vColor;
     
     void main() {
+    
       vec4 modelPosition = modelMatrix * vec4(position, 1.0);
       
       // Spin
@@ -113,7 +109,7 @@ const GalaxyMaterial = shaderMaterial({
       angle += angleOffset;
       modelPosition.x = cos(angle) * distanceToCenter;
       modelPosition.z = sin(angle) * distanceToCenter;
-      
+
       vec4 viewPosition = viewMatrix * modelPosition;
       vec4 projectedPosition = projectionMatrix * viewPosition;
       gl_Position = projectedPosition;
