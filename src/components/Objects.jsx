@@ -1,4 +1,4 @@
-import {useIntersect, Html} from '@react-three/drei'
+import {Environment, useIntersect, Html, useGLTF, PresentationControls, useScroll} from '@react-three/drei'
 import {useFrame, useThree} from '@react-three/fiber'
 import React, {useMemo, useRef} from 'react'
 import * as THREE from 'three'
@@ -8,15 +8,33 @@ import {Galaxy} from "./galaxy";
 import {SiteName} from "./SiteName";
 import {Tablet} from "./Tablet";
 
+
 function Objects() {
   const {height, width} = useThree((state) => state.viewport)
 
+  const tablet = useGLTF('./tablet.glb')
+  const {gl} = useThree();
+
+
+  const parameter_options = useMemo(() => {
+    return {
+      x: {value: 0, min: -10, max: 10, step: .1},
+      y: {value: .01, min: -10, max: 10, step: .001},
+      z: {value: -0.02, min: -10, max: 10, step: .1},
+      distance: {value: .2, min: -10, max: 10, step: .1},
+    }
+  }, [])
+  const parameters = useControls('Tablet controls', parameter_options)
+
+  const scrollData = useScroll();
 
   return (
     <>
       <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>
       <pointLight color="red" position={[0, -height * 2.25, 5]} intensity={10}/>
       <ambientLight color="white"/>
+      <Environment preset="city"/>
+
 
       <Item color="blue" position={[width / 2, -height * 1, 0]}>
         <dodecahedronGeometry/>
@@ -34,9 +52,13 @@ function Objects() {
       <Galaxy position={[1, 100, 100]}/>
       <SiteName position={[2, 100, 3]}/>
 
-      <Tablet position={[0, -height * 1, 3]} rotation-x={1.6}>
+      {/*<Tablet position={[0, -height * 1, 3]} rotation-x={1.6}>*/}
 
-      </Tablet>
+      {/*</Tablet>*/}
+
+      {/*<primitive object={ tablet.scene } position={[parameters.x, parameters.y, parameters.z]} >*/}
+      {/*  <Html>This is going to be an iframe</Html>*/}
+      {/*</primitive>*/}
 
 
       {/*<Html*/}
@@ -47,6 +69,22 @@ function Objects() {
       {/*</Html>*/}
 
 
+      <PresentationControls>
+        <primitive scale={4} object={tablet.scene} position={[0, -height * 1, 3]} rotation-x={90 * (Math.PI / 180)}>
+          >
+          <Html
+            transform
+            wrapperClass="htmlScreen"
+            distanceFactor={parameters.distance}
+            portal={{current: gl.domElement.parentNode}}
+            rotation-x={270 * (Math.PI / 180)}
+            position={[parameters.x, parameters.y, parameters.z]}
+            occlude={"blending"}
+          >
+            <iframe src="https://bruno-simon.com/html/"/>
+          </Html>
+        </primitive>
+      </PresentationControls>
 
 
     </>

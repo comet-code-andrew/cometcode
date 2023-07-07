@@ -16,6 +16,9 @@ function Scene() {
 
 
   return (
+
+        // <Objects />
+
     <ScrollControls pages={3}>
       <Scroll>
         <Objects />
