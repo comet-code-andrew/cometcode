@@ -1,4 +1,4 @@
-import {Environment, useIntersect, Html, useGLTF, PresentationControls, useScroll} from '@react-three/drei'
+import {Environment, useIntersect, Html, useGLTF, PresentationControls, useScroll, GizmoHelper} from '@react-three/drei'
 import {useFrame, useThree} from '@react-three/fiber'
 import React, {useMemo, useRef} from 'react'
 import * as THREE from 'three'
@@ -7,6 +7,7 @@ import {useControls} from "leva";
 import {Galaxy} from "./galaxy";
 import {SiteName} from "./SiteName";
 import {Tablet} from "./Tablet";
+import {Planet} from "./Planet";
 
 
 function Objects() {
@@ -30,44 +31,32 @@ function Objects() {
 
   return (
     <>
-      <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>
-      <pointLight color="red" position={[0, -height * 2.25, 5]} intensity={10}/>
-      <ambientLight color="white"/>
+      <GizmoHelper>
+        <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>
+      </GizmoHelper>
+
+      <GizmoHelper>
+        <pointLight color="red" position={[0, -height * 2.25, 5]} intensity={10}/>
+      </GizmoHelper>
+      {/*<ambientLight color="white" intensity={5}/>*/}
       <Environment preset="city"/>
 
 
-      <Item color="blue" position={[width / 2, -height * 1, 0]}>
-        <dodecahedronGeometry/>
-      </Item>
-      <Item color="gray" position={[-width / 5, -height * 1.8, -2]}>
-        <coneGeometry args={[1, 1, 6]}/>
-      </Item>
-      <Item color="purple" position={[width / 4, -height * 2, 0]}>
-        <coneGeometry args={[1.5, 2, 3]}/>
-      </Item>
-      <Item color="orange" position={[-width / 12, -height * 2.25, 0.5]}>
-        <coneGeometry args={[0.75, 2.5, 12]}/>
-      </Item>
+      {/*<Item color="blue" position={[width / 2, -height * 1, 0]}>*/}
+      {/*  <dodecahedronGeometry/>*/}
+      {/*</Item>*/}
+      {/*<Item color="gray" position={[-width / 5, -height * 1.8, -2]}>*/}
+      {/*  <coneGeometry args={[1, 1, 6]}/>*/}
+      {/*</Item>*/}
+      {/*<Item color="purple" position={[width / 4, -height * 2, 0]}>*/}
+      {/*  <coneGeometry args={[1.5, 2, 3]}/>*/}
+      {/*</Item>*/}
+      {/*<Item color="orange" position={[-width / 12, -height * 2.25, 0.5]}>*/}
+      {/*  <coneGeometry args={[0.75, 2.5, 12]}/>*/}
+      {/*</Item>*/}
 
-      <Galaxy position={[1, 100, 100]}/>
-      <SiteName position={[2, 100, 3]}/>
-
-      {/*<Tablet position={[0, -height * 1, 3]} rotation-x={1.6}>*/}
-
-      {/*</Tablet>*/}
-
-      {/*<primitive object={ tablet.scene } position={[parameters.x, parameters.y, parameters.z]} >*/}
-      {/*  <Html>This is going to be an iframe</Html>*/}
-      {/*</primitive>*/}
-
-
-      {/*<Html*/}
-      {/*      */}
-      {/*      wrapperClass="htmlScreen"*/}
-      {/*>*/}
-      {/*  <iframe src="https://bruno-simon.com/html/"/>*/}
-      {/*</Html>*/}
-
+      <Galaxy/>
+      <SiteName/>
 
       <PresentationControls>
         <primitive scale={4} object={tablet.scene} position={[0, -height * 1, 3]} rotation-x={90 * (Math.PI / 180)}>
@@ -86,6 +75,7 @@ function Objects() {
         </primitive>
       </PresentationControls>
 
+      <Planet position={[0.0, -height * 2.25, 0]}/>
 
     </>
   )
