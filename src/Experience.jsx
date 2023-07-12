@@ -4,7 +4,6 @@ import {Scene} from "./Scene";
 export default function Experience() {
 
 
-
   return (<>
       <Canvas>
         <Scene/>

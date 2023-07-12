@@ -8,21 +8,23 @@ import {Galaxy} from "./galaxy";
 import {SiteName} from "./SiteName";
 import {Tablet} from "./Tablet";
 import {Planet} from "./Planet";
+import {DoubleSide} from "three";
 
 
 function Objects() {
   const {height, width} = useThree((state) => state.viewport)
 
-  const tablet = useGLTF('./tablet.glb')
+  const tablet = useGLTF('./the_tablet.glb')
+
   const {gl} = useThree();
 
 
   const parameter_options = useMemo(() => {
     return {
       x: {value: 0, min: -10, max: 10, step: .1},
-      y: {value: .01, min: -10, max: 10, step: .001},
-      z: {value: -0.02, min: -10, max: 10, step: .1},
-      distance: {value: .2, min: -10, max: 10, step: .1},
+      y: {value: -7.7, min: -10, max: 10, step: .001},
+      z: {value: 1.125, min: -10, max: 10, step: .1},
+      distance: {value: 2.4, min: -10, max: 10, step: .1},
     }
   }, [])
   const parameters = useControls('Tablet controls', parameter_options)
@@ -59,19 +61,21 @@ function Objects() {
       <SiteName/>
 
       <PresentationControls>
-        <primitive scale={4} object={tablet.scene} position={[0, -height * 1, 3]} rotation-x={90 * (Math.PI / 180)}>
-          >
-          <Html
-            transform
-            wrapperClass="htmlScreen"
-            distanceFactor={parameters.distance}
-            portal={{current: gl.domElement.parentNode}}
-            rotation-x={270 * (Math.PI / 180)}
-            position={[parameters.x, parameters.y, parameters.z]}
-            occlude={"blending"}
-          >
-            <iframe src="https://bruno-simon.com/html/"/>
-          </Html>
+        <Html
+          transform
+          wrapperClass="htmlScreen"
+          distanceFactor={parameters.distance}
+          portal={{current: gl.domElement.parentNode}}
+          // rotation-x={270 * (Math.PI / 180)}
+          position={[parameters.x, parameters.y, parameters.z]}
+          occlude={"blending"}
+          receiveShadow={true}
+          prepend={true}
+          zIndexRange={[100, 0]}
+        >
+          <iframe src="https://bruno-simon.com/html/"/>
+        </Html>
+        <primitive scale={2} object={tablet.scene} position={[0, -height * 1, 1]} >
         </primitive>
       </PresentationControls>
 
