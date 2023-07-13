@@ -1,20 +1,10 @@
-import {TransformControls, Wireframe, MeshReflectorMaterial, Plane, useGLTF, useTexture} from "@react-three/drei";
-import {MeshStandardMaterial} from "three/src/materials/Materials";
+import {useTexture} from "@react-three/drei";
 import * as THREE from 'three'
-import {extend, useLoader} from "@react-three/fiber";
 import {useMemo} from "react";
 import {useControls} from "leva";
 
 
 function Planet(props) {
-  const loader = new THREE.TextureLoader();
-
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/moon/Moon_001_COLOR.jpg')
-  const displacementMap = loader.load('/textures/moon/Moon_001_DISP.jpg')
-  const normalMap = loader.load('/textures/moon/Moon_001_NORM.jpg')
-  const occMap = loader.load('/textures/moon/Moon_001_OCC.jpg')
-  const specMap = loader.load('/textures/moon/Moon_001_SPEC.jpg')
-
 
   const texture = useTexture({
     map: "/textures/moon/Moon_001_COLOR.jpg",
@@ -48,19 +38,6 @@ function Planet(props) {
   texture.aoMap.wrapS = THREE.RepeatWrapping
   texture.aoMap.wrapT = THREE.RepeatWrapping
 
-
-
-  // colorMap.repeat.x = 5
-  // colorMap.repeat.y = 5
-  // colorMap.wrapS = THREE.RepeatWrapping
-  // colorMap.wrapT = THREE.RepeatWrapping
-
-
-  // const material = new THREE.MeshBasicMaterial({map: colorMap})
-
-  // const material = new THREE.MeshStandardMaterial({map: colorMap, displacementMap:displacementMap, normalMap: normalMap, aoMap: occMap})
-
-
   const parameter_options = useMemo(() => {
     return {
       radius: {value: 100, min: 0, max: 100, step: 1},
@@ -82,7 +59,6 @@ function Planet(props) {
       rotation_x: {value: 0, min: 0, max: 360, step: 1},
       rotation_y: {value: 0, min: 0, max: 360, step: 1},
       rotation_z: {value: 1, min: 0, max: 360, step: 1},
-
     }
   }, [])
   const position_parameters = useControls('planet position controls', planet_position_options)
@@ -91,17 +67,16 @@ function Planet(props) {
 
   return (
     <>
-
-
-
       <mesh
+        receiveShadow={true}
         position={
           [
             props.position[0] + position_parameters.position_x,
             props.position[1] + position_parameters.position_y,
             props.position[2] + position_parameters.position_z
           ]
-        } rotation-x={position_parameters.rotation_x * (Math.PI / 180)}>
+        } rotation-x={position_parameters.rotation_x * (Math.PI / 180)}
+      >
         <sphereGeometry
           args={[
             parameters.radius,
@@ -111,6 +86,7 @@ function Planet(props) {
             parameters.phiLength,
             parameters.thetaStart,
             parameters.thetaLength]}/>
+        {/*<meshStandardMaterial/>*/}
         <meshStandardMaterial {...texture}/>
       </mesh>
     </>

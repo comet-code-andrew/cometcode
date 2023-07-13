@@ -20,7 +20,13 @@ function Galaxy() {
       randomness: {value: 0.5, min: 0, max: 10, step: 2},
       randomnessPower: {value: 3, min: 0, max: 10, step: 2},
       insideColor: {value: '#ff6030'},
-      outsideColor: {value: '#1b3984'}
+      outsideColor: {value: '#1b3984'},
+      position_x: {value: 0, min: 0, max: 100, step: 1},
+      position_y: {value: 0, min: 0, max: 100, step: 1},
+      position_z: {value: 0, min: 0, max: 100, step: 1},
+      rotation_x: {value: 0, min: 0, max: 100, step: 1}
+
+
     }
   }, [])
   const parameters = useControls('parameter controls', parameter_options)
@@ -40,13 +46,17 @@ function Galaxy() {
     const radius = Math.random() * parameters.radius
     const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
 
-    const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius
-    const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius
-    const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius
+    const randomX = (Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius)
+    const randomY = (Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius)
+    const randomZ = (Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius)
 
     positions[i3] = Math.cos(branchAngle) * radius + randomX
     positions[i3 + 1] = randomY
     positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
+
+    positions[i3] += parameters.position_x
+    positions[i3 + 1] += parameters.position_y
+    positions[i3 + 2] += parameters.position_z
 
     // Color
     const mixedColor = insideColor.clone()
@@ -62,15 +72,15 @@ function Galaxy() {
 
   const galaxyMaterial = useRef()
   useFrame((state, delta) => {
-    galaxyMaterial.current.uTime += delta
+    galaxyMaterial.current.uTime += delta/2
   })
 
 
   return (<>
 
       <mesh position-y={-1}>
-        <Points positions={positions}>
-          <galaxyMaterial ref={galaxyMaterial} uSize={parameters.size} color={colors} key={GalaxyMaterial.key}/>
+        <Points positions={positions} >
+          <galaxyMaterial rotation={[0,5,0]} ref={galaxyMaterial} uSize={parameters.size} color={colors} key={GalaxyMaterial.key} uRotation={parameters.rotation_x}/>
         </Points>
       </mesh>
   </>)
@@ -87,12 +97,15 @@ const GalaxyMaterial = shaderMaterial({
     uSize: 0.01, // TODO: multiply by getPixelRation()
     uTime: 0,
     color: new THREE.Color("blue"),
+    uRotation: 0.0
+
 
 
   }, // vertex shader
   /*glsl*/`
     uniform float uSize;
     uniform float uTime;
+    uniform float uRotation;
     
     attribute float aScale;
     
@@ -100,7 +113,20 @@ const GalaxyMaterial = shaderMaterial({
     
     void main() {
     
+    
+      // Tilt
+      // vec4 newPosition = vec4(
+      // cos(1.0) * sin(1.0), // x
+      // cos(1.0), // y
+      // sin(1.0) * sin(1.0), // z
+      // 1.0
+      // );
+    
+    
+      // vec4 modelPosition = modelMatrix * newPosition;
+       
       vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+      
       
       // Spin
       float angle = atan(modelPosition.x, modelPosition.z);
@@ -110,7 +136,15 @@ const GalaxyMaterial = shaderMaterial({
       modelPosition.x = cos(angle) * distanceToCenter;
       modelPosition.z = sin(angle) * distanceToCenter;
 
+      // Move
+      // modelPosition.z -= 4.0;
+
+      
+      
       vec4 viewPosition = viewMatrix * modelPosition;
+      
+
+      
       vec4 projectedPosition = projectionMatrix * viewPosition;
       gl_Position = projectedPosition;
       

@@ -1,4 +1,13 @@
-import {Environment, useIntersect, Html, useGLTF, PresentationControls, useScroll, GizmoHelper} from '@react-three/drei'
+import {
+  Environment,
+  useIntersect,
+  Html,
+  useGLTF,
+  PresentationControls,
+  useScroll,
+  GizmoHelper,
+  TransformControls, Box
+} from '@react-three/drei'
 import {useFrame, useThree} from '@react-three/fiber'
 import React, {useMemo, useRef} from 'react'
 import * as THREE from 'three'
@@ -9,6 +18,7 @@ import {SiteName} from "./SiteName";
 import {Tablet} from "./Tablet";
 import {Planet} from "./Planet";
 import {DoubleSide} from "three";
+import {SpaceStation} from "./SpaceStation";
 
 
 function Objects() {
@@ -33,15 +43,14 @@ function Objects() {
 
   return (
     <>
-      <GizmoHelper>
-        <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>
-      </GizmoHelper>
+      {/*<GizmoHelper>*/}
+      {/*  <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>*/}
+      {/*</GizmoHelper>*/}
 
-      <GizmoHelper>
-        <pointLight color="red" position={[0, -height * 2.25, 5]} intensity={10}/>
-      </GizmoHelper>
+      <TransformControls>
+        <directionalLight color="red" position={[0.0, 1, 0]} intensity={10} castShadow={true} />
+      </TransformControls>
       {/*<ambientLight color="white" intensity={5}/>*/}
-      <Environment preset="city"/>
 
 
       {/*<Item color="blue" position={[width / 2, -height * 1, 0]}>*/}
@@ -79,7 +88,13 @@ function Objects() {
         </primitive>
       </PresentationControls>
 
-      <Planet position={[0.0, -height * 2.25, 0]}/>
+
+      <SpaceStation position={[0.0, -height * 5.25, 0]}/>
+
+      <Box position={[0.0, -height * 4.75, 0]} castShadow={true}/>
+
+      <Planet position={[0.0, -height * 5.25, 0]}/>
+      <Environment background files={"./alpha.hdr"}/>
 
     </>
   )

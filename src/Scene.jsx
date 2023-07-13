@@ -16,16 +16,11 @@ function Scene() {
 
 
   return (
-
-        // <Objects />
-
-    <ScrollControls pages={3}>
+    <ScrollControls pages={6}>
       <Scroll>
         <Objects />
       </Scroll>
-      <Scroll html>
-        <Html/>
-      </Scroll>
+
     </ScrollControls>
   )
 }

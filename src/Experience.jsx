@@ -5,7 +5,9 @@ export default function Experience() {
 
 
   return (<>
-      <Canvas>
+      <Canvas
+        shadows
+      >
         <Scene/>
       </Canvas>
     </>
