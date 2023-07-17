@@ -6,7 +6,7 @@ import {
   PresentationControls,
   useScroll,
   GizmoHelper,
-  TransformControls, Box
+  TransformControls, Box, Plane
 } from '@react-three/drei'
 import {useFrame, useThree} from '@react-three/fiber'
 import React, {useMemo, useRef} from 'react'
@@ -19,6 +19,10 @@ import {Tablet} from "./Tablet";
 import {Planet} from "./Planet";
 import {DoubleSide} from "three";
 import {SpaceStation} from "./SpaceStation";
+import {Mars} from "./Mars";
+import {Station} from "./Station";
+import {SunLight} from "./SunLight";
+import {Portal} from "./Portal";
 
 
 function Objects() {
@@ -47,9 +51,9 @@ function Objects() {
       {/*  <pointLight color="blue" position={[8, -25, 5]} intensity={20}/>*/}
       {/*</GizmoHelper>*/}
 
-      <TransformControls>
-        <directionalLight color="red" position={[0.0, 1, 0]} intensity={10} castShadow={true} />
-      </TransformControls>
+      {/*<TransformControls>*/}
+      {/*  <directionalLight color="white" position={[30, 0, 0]} intensity={2} castShadow={true} />*/}
+      {/*</TransformControls>*/}
       {/*<ambientLight color="white" intensity={5}/>*/}
 
 
@@ -65,6 +69,8 @@ function Objects() {
       {/*<Item color="orange" position={[-width / 12, -height * 2.25, 0.5]}>*/}
       {/*  <coneGeometry args={[0.75, 2.5, 12]}/>*/}
       {/*</Item>*/}
+
+      <SunLight/>
 
       <Galaxy/>
       <SiteName/>
@@ -82,7 +88,7 @@ function Objects() {
           prepend={true}
           zIndexRange={[100, 0]}
         >
-          <iframe src="https://bruno-simon.com/html/"/>
+          <iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>
         </Html>
         <primitive scale={2} object={tablet.scene} position={[0, -height * 1, 1]} >
         </primitive>
@@ -91,9 +97,15 @@ function Objects() {
 
       <SpaceStation position={[0.0, -height * 5.25, 0]}/>
 
-      <Box position={[0.0, -height * 4.75, 0]} castShadow={true}/>
+      <Box position={[0.0, -height * 4.75, -3]} castShadow={true}/>
 
-      <Planet position={[0.0, -height * 5.25, 0]}/>
+      <Station position={[1, -height * 4.75, -5]}/>
+
+
+
+      <Mars position={[0.0, -height * 5.25, 0]}/>
+      <Portal position={[0.0, -height * 5.25, 0]}/>
+
       <Environment background files={"./alpha.hdr"}/>
 
     </>

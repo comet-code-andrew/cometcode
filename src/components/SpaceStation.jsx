@@ -1,46 +1,44 @@
 import {useGLTF} from "@react-three/drei";
 import {useControls} from "leva";
-import {useMemo} from "react";
+import {useMemo, useRef} from "react";
 import {useFrame} from "@react-three/fiber";
 
 
 function SpaceStation(props) {
 
-  const space_station = useGLTF('./low_poly_space_station.glb')
-  space_station.scene.rotation.x = 40 * (Math.PI / 180)
+  const station = useRef()
 
-  const station_position_options = useMemo(() => {
+  const options = useMemo(() => {
     return {
-      position_x: {value: 0, min: -100, max: 100, step: 1},
-      position_y: {value: 0, min: -400, max: 100, step: 1},
-      position_z: {value: -17, min: -100, max: 100, step: 1},
-      rotation_x: {value: 0, min: 0, max: 360, step: 1},
+      position_x: {value: -17, min: -100, max: 100, step: 1},
+      position_y: {value: 20, min: -400, max: 100, step: 1},
+      position_z: {value: -28, min: -100, max: 100, step: 1},
+      rotation_x: {value: 200, min: 0, max: 360, step: 1},
       rotation_y: {value: 0, min: 0, max: 360, step: 1},
       rotation_z: {value: 0, min: 0, max: 360, step: 1},
     }
   }, [])
-  const position_parameters = useControls('station position controls', station_position_options)
+  const position_parameters = useControls('station position controls', options)
 
   useFrame((state, delta) => {
-    space_station.scene.rotation.y += delta/4
+    station.current.rotation.z += delta / 4
+    station.current.position.x += delta / 4
+
   })
 
   return (
     <>
-
-        <Model
-          scale={1}
-          object={space_station.scene}
-          castShadow
-          position={[
-            props.position[0] + position_parameters.position_x,
-            props.position[1] + position_parameters.position_y,
-            props.position[2] + position_parameters.position_z
-          ]}
-          rotation={[position_parameters.rotation_x, position_parameters.rotation_y, position_parameters.rotation_z]}
-        />
-        <meshStandardMaterial castShadow={true}/>
-
+      <mesh
+        ref={station}
+        position={[
+          props.position[0] + position_parameters.position_x,
+          props.position[1] + position_parameters.position_y,
+          props.position[2] + position_parameters.position_z
+        ]}
+        rotation={[position_parameters.rotation_x, position_parameters.rotation_y, position_parameters.rotation_z]}
+      >
+        <Model/>
+      </mesh>
     </>
   )
 }
@@ -49,7 +47,7 @@ export {SpaceStation}
 
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF("/low_poly_space_station.glb");
+  const {nodes, materials} = useGLTF("/low_poly_space_station.glb");
   return (
     <group {...props} dispose={null}>
       <mesh
