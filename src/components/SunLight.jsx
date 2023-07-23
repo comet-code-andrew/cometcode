@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import { DirectionalLightHelper} from "three";
+import {DirectionalLightHelper} from "three";
 import {useHelper} from "@react-three/drei";
 import {useControls} from "leva";
 
@@ -7,7 +7,7 @@ import {useControls} from "leva";
 function SunLight() {
 
   const dirLight = useRef();
-  useHelper(dirLight, DirectionalLightHelper,2,  "red");
+  // useHelper(dirLight, DirectionalLightHelper, 20, "red");
 
   const directionalCtl = useControls('Directional Light', {
     visible: true,
@@ -18,9 +18,9 @@ function SunLight() {
     },
     castShadow: true,
     top: 50, // default
-    left: -50, // default
-    right: 50, // default
-    bottom: -50
+    left: -25, // default
+    right: 20, // default
+    bottom: -25
   })
 
 

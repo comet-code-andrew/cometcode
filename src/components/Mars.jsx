@@ -10,34 +10,9 @@ function Mars(props) {
     map: "/textures/mars/colormap-1024.png",
     displacementMap: '/textures/mars/heightmap-1024.png',
     normalMap: '/textures/mars/normalmap-1024.PNG',
-    roughnessMap:'/textures/mars/roughnessmap-1024.png',
-    smoothnessMap:'/textures/mars/smoothnessmap-1024.png'
-
+    roughnessMap: '/textures/mars/roughnessmap-1024.png',
+    smoothnessMap: '/textures/mars/smoothnessmap-1024.png'
   })
-
-  // const repeat_count =16
-  //
-  // texture.displacementScale = 0.2
-  //
-  // texture.map.repeat.x = repeat_count
-  // texture.map.repeat.y = repeat_count
-  // texture.map.wrapS = THREE.RepeatWrapping
-  // texture.map.wrapT = THREE.RepeatWrapping
-  //
-  // texture.displacementMap.repeat.x = repeat_count
-  // texture.displacementMap.repeat.y = repeat_count
-  // texture.displacementMap.wrapS = THREE.RepeatWrapping
-  // texture.displacementMap.wrapT = THREE.RepeatWrapping
-  //
-  // texture.normalMap.repeat.x = repeat_count
-  // texture.normalMap.repeat.y = repeat_count
-  // texture.normalMap.wrapS = THREE.RepeatWrapping
-  // texture.normalMap.wrapT = THREE.RepeatWrapping
-  //
-  // texture.aoMap.repeat.x = repeat_count
-  // texture.aoMap.repeat.y = repeat_count
-  // texture.aoMap.wrapS = THREE.RepeatWrapping
-  // texture.aoMap.wrapT = THREE.RepeatWrapping
 
   const parameter_options = useMemo(() => {
     return {
@@ -46,12 +21,6 @@ function Mars(props) {
       widthSegments: {value: 100, min: 0, max: 5000, step: 2},
       heightSegments: {value: 100, min: 0, max: 5000, step: 2},
       displacement: {value: 21, min: 0, max: 50, step: 1}
-
-      // heightSegment: {value: 50, min: 0, max: 5000, step: 2},
-      // phiStart: {value: 2.6, min: 0, max: 10, step: .1},
-      // phiLength: {value: 6.283185307179586, min: 0, max: 10, step: 2},
-      // thetaStart: {value: 0, min: 0, max: 10, step: 2},
-      // thetaLength: {value: 0.414690230273853, min: 0, max: 10, step: 2},
     }
   }, [])
   const parameters = useControls('mars', parameter_options)
@@ -67,8 +36,6 @@ function Mars(props) {
     }
   }, [])
   const position_parameters = useControls('mars', mars_position_options)
-
-  console.log(props)
 
   return (
     <>
@@ -91,11 +58,7 @@ function Mars(props) {
             parameters.heightSegments]}
           wireframe={true}
         />
-        {/*<meshStandardMaterial/>*/}
         <meshStandardMaterial {...texture} displacementScale={parameters.displacement}/>
-
-        {/*<Wireframe/>*/}
-
       </mesh>
     </>
   )
