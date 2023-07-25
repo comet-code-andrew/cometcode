@@ -11,16 +11,21 @@ import {
 } from '@react-three/drei'
 import Box from '@mui/material/Box';
 import CircularProgressWithLabel from '@mui/material/LinearProgress';
+import {Container} from "@mui/material";
+
+
 
 
 function Scene() {
 
+
+
   function Loader() {
     const {active, progress, errors, item, loaded, total} = useProgress()
     return (<>
-      <Html center>loading...
-        <CircularProgressWithLabel value={progress} />
-        <p>{item}</p>
+      <Html center>
+          <CircularProgressWithLabel value={progress} color={"primary"}/>
+          <p style={{color : "#19C1DC"}}>{item}</p>
       </Html>
     </>
     )
