@@ -34,11 +34,11 @@ function Scene() {
   return (
     <>
       <Suspense fallback={<Loader/>}>
-        <ScrollControls pages={6}>
-          <Scroll>
+        {/*<ScrollControls pages={6}>*/}
+        {/*  <Scroll>*/}
             <Objects/>
-          </Scroll>
-        </ScrollControls>
+        {/*  </Scroll>*/}
+        {/*</ScrollControls>*/}
       </Suspense>
 
     </>
