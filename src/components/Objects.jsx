@@ -7,6 +7,7 @@ import {
 } from '@react-three/drei'
 import {useFrame, useLoader, useThree} from '@react-three/fiber'
 import React, {useMemo, useRef, Suspense, useEffect} from 'react'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 
 
 import {useControls} from "leva";
@@ -153,28 +154,28 @@ function Objects() {
       {/*<SunLight/>*/}
 
 
-      <PresentationControls>
-        <Html
-          transform
-          wrapperClass="htmlScreen"
-          distanceFactor={parameters.distance}
-          portal={{current: gl.domElement.parentNode}}
-          position={[parameters.x, parameters.y, parameters.z]}
-          occlude={"blending"}
-          receiveShadow={true}
-          prepend={true}
-          zIndexRange={[100, 0]}
-        >
-          {/*<iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>*/}
-          <iframe src="http://localhost:3001"/>
+      {/*<PresentationControls>*/}
+      {/*  <Html*/}
+      {/*    transform*/}
+      {/*    wrapperClass="htmlScreen"*/}
+      {/*    distanceFactor={parameters.distance}*/}
+      {/*    portal={{current: gl.domElement.parentNode}}*/}
+      {/*    position={[parameters.x, parameters.y, parameters.z]}*/}
+      {/*    occlude={"blending"}*/}
+      {/*    receiveShadow={true}*/}
+      {/*    prepend={true}*/}
+      {/*    zIndexRange={[100, 0]}*/}
+      {/*  >*/}
+      {/*    /!*<iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>*!/*/}
+      {/*    <iframe src="http://localhost:3001"/>*/}
 
-        </Html>
-        <primitive scale={2} object={tablet.scene} position={[0, -height * 1, 1]}>
-        </primitive>
-      </PresentationControls>
-      <SpaceStation position={[0.0, -height * 5.25, 0]}/>
-      <Mars position={[0.0, -height * 5.25, 0]}/>
-      <Portal position={[0.0, -height * 5.25, 0]}/>
+      {/*  </Html>*/}
+      {/*  <primitive scale={2} object={tablet.scene} position={[0, -height * 1, 1]}>*/}
+      {/*  </primitive>*/}
+      {/*</PresentationControls>*/}
+      {/*<SpaceStation position={[0.0, -height * 5.25, 0]}/>*/}
+      {/*<Mars position={[0.0, -height * 5.25, 0]}/>*/}
+      {/*<Portal position={[0.0, -height * 5.25, 0]}/>*/}
       <ambientLight intensity={0.5}/>
       <directionalLight position={[10, 10, 5]} intensity={1}/>
 
