@@ -43,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "overrides": {
+    "leva": {
+      "@radix-ui/react-portal": "1.0.2"
+    }
   }
 }

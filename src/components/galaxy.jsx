@@ -13,7 +13,7 @@ function Galaxy() {
   const parameter_options = useMemo(() => {
     return {
       count: {value: 20000, min: 10000, max: 800000, step: 10000},
-      size: {value: 26.0, min: 0, max: 50, step: 2},
+      size: {value: 26.0, min: 0, max: 500, step: 2},
       radius: {value: 5, min: 0, max: 10, step: 2},
       branches: {value: 3, min: 0, max: 10, step: 2},
       spin: {value: 1, min: 0, max: 10, step: 2},
@@ -21,11 +21,10 @@ function Galaxy() {
       randomnessPower: {value: 3, min: 0, max: 10, step: 2},
       insideColor: {value: '#ff6030'},
       outsideColor: {value: '#1b3984'},
-      position_x: {value: 0, min: 0, max: 100, step: 1},
-      position_y: {value: 0, min: 0, max: 100, step: 1},
-      position_z: {value: 0, min: 0, max: 100, step: 1},
-      rotation_x: {value: 0, min: 0, max: 100, step: 1}
-
+      position_x: {value: 0, min: -1000, max: 100, step: 1},
+      position_y: {value: 0, min: -1000, max: 100, step: 1},
+      position_z: {value: 0, min: -1000, max: 100, step: 1},
+      rotation_x: {value: 0, min: -1000, max: 100, step: 1}
 
     }
   }, [])

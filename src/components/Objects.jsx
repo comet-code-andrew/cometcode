@@ -181,6 +181,7 @@ function Objects() {
 
       <SpaceHighway/>
       <Cockpit/>
+      {/*<Galaxy/>*/}
 
     </>
   )

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./Scene"
-import { Leva } from "leva"
+import {Leva, LevaPanel} from "leva"
 import { Loader, Stats } from "@react-three/drei"
 
 
@@ -39,6 +39,7 @@ export default function Experience() {
         collapsed={false} // Expanded by default, change to true if you want it collapsed initially
 
       />
+      <LevaPanel/>
       <Canvas
         shadows
         camera={{
