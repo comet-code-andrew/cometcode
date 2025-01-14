@@ -1,10 +1,16 @@
-import React, {useState, useRef, useCallback, useMemo} from 'react';
+import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useControls } from 'leva';
+import {folder, useControls} from 'leva';
 import * as THREE from 'three';
 import {SpotLight, Text} from '@react-three/drei';
+import {Bloom, EffectComposer, SelectiveBloom} from "@react-three/postprocessing";
 
-// BrutalistArch component
+import { BlendFunction } from 'postprocessing'
+
+const BLOOM_LAYER = 1;
+const bloomLayer = new THREE.Layers();
+bloomLayer.set(BLOOM_LAYER);
+
 const BrutalistArch = React.memo(({ roadWidth }) => {
   const {
     pillarHeight,
@@ -24,8 +30,8 @@ const BrutalistArch = React.memo(({ roadWidth }) => {
     topBeamDepth: { value: 5, min: 1, max: 20, step: 0.5 },
     angleHeight: { value: 2, min: 1, max: 15, step: 0.1 },
     angleWidth: { value: 5, min: 1, max: 20, step: 0.1 },
-    emissiveIntensity: { value: 2, min: 0, max: 5, step: 0.1 },
-    rectIntensity: { value: 5, min: 0, max: 20, step: 0.1 },
+    emissiveIntensity: { value: 1, min: 0, max: 5, step: 0.1 },
+    rectIntensity: { value: 30, min: 0, max: 50, step: 0.1 },
   }, { collapsed: true });
 
   // Use roadWidth directly instead of archWidth
@@ -80,8 +86,8 @@ const BrutalistArch = React.memo(({ roadWidth }) => {
       <mesh position={[0, totalHeight, 0]}>
         <boxGeometry args={[archWidth - (angleWidth * 2), topBeamThickness, topBeamDepth]}/>
         <meshStandardMaterial
-          color="white"
-          emissive="white"
+          color="#E7CF6A"
+          emissive="#E7CF6A"
           emissiveIntensity={emissiveIntensity}
         />
       </mesh>
@@ -91,7 +97,7 @@ const BrutalistArch = React.memo(({ roadWidth }) => {
         width={archWidth - (angleWidth * 2)}
         height={topBeamDepth}
         intensity={rectIntensity}
-        color="#ff8c00"
+        color="#E7CF6A"
         position={[0, totalHeight - (topBeamThickness / 2), 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       />
@@ -108,7 +114,55 @@ const WallMarker = React.memo(({ position, rotation, width, height, depth, color
   );
 });
 
-// RoadSegment component
+const LaneMarkers = React.memo(({ roadWidth }) => {
+  const {
+    lineLength,
+    lineSpacing,
+    horizontalOffset,
+    verticalSpacing,
+    lineWidth,
+    neonColor,
+    emissiveIntensity,
+  } = useControls('Space Highway.Lane Markers', {
+    pattern: folder({
+      lineLength: { value: 20, min: 1, max: 50, step: 1, label: 'Line Length' },
+      lineSpacing: { value: 50, min: 1, max: 50, step: 0.5, label: 'Vertical Spacing' },
+      horizontalOffset: { value: 8, min: 0, max: 20, step: 0.5, label: 'Horizontal Offset' },
+      verticalSpacing: { value: 50, min: 5, max: 100, step: 1, label: 'Pattern Spacing' },
+    }),
+    appearance: folder({
+      lineWidth: { value: 1, min: 0.1, max: 5, step: 0.1, label: 'Line Width' },
+      neonColor: { value: '#00ffff', label: 'Neon Color' },
+      emissiveIntensity: { value: 5, min: 0, max: 20, step: 0.1, label: 'Glow Intensity' },
+    })
+  }, { collapsed: true });
+
+  const lines = useMemo(() => {
+    const pattern = [];
+    pattern.push({ position: [-horizontalOffset, 0.1, 0] });
+    pattern.push({ position: [horizontalOffset, 0.1, lineSpacing] });
+    return pattern;
+  }, [horizontalOffset, lineSpacing]);
+
+  return (
+    <group>
+      {lines.map((line, index) => (
+        <group key={index} position={line.position}>
+          <mesh>
+            <boxGeometry args={[lineWidth, 0.1, lineLength]} />
+            <meshStandardMaterial
+              color={neonColor}
+              emissive={neonColor}
+              emissiveIntensity={emissiveIntensity}
+              toneMapped={false}
+            />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+});
+
 const RoadSegment = React.memo(({ width }) => {
   const {
     roadColor,
@@ -179,42 +233,12 @@ const RoadSegment = React.memo(({ width }) => {
   );
 });
 
-const RoadMarker = React.memo(({ position }) => {
-  const {
-    markerLength,
-    markerWidth,
-    markerColor,
-    emissiveIntensity,
-  } = useControls('Space Highway.Road Marker', {
-    markerLength: { value: 10, min: 5, max: 30, step: 1 },
-    markerWidth: { value: 0.5, min: 0.1, max: 2, step: 0.1 },
-    markerColor: '#00ffff',
-    emissiveIntensity: { value: 2, min: 0, max: 10, step: 0.1 },
-  });
-
-  return (
-    <group position={position}>
-      <mesh>
-        <boxGeometry args={[markerWidth, 0.1, markerLength]} />
-        <meshStandardMaterial
-          color={markerColor}
-          emissive={markerColor}
-          emissiveIntensity={emissiveIntensity}
-        />
-      </mesh>
-    </group>
-  );
-});
-
-
-
-
 const PostLights = React.memo(({ roadWidth }) => {
   const {
     power, distance, angle, penumbra,
     attenuation, anglePower, decay,
     enableShadows, cullingDistance,
-    postHeight, postCount
+    postHeight
   } = useControls('Post Lights', {
     power: { value: 500, min: 0, max: 1000, step: 1 },
     distance: { value: 30, min: 1, max: 100, step: 0.5 },
@@ -226,54 +250,46 @@ const PostLights = React.memo(({ roadWidth }) => {
     enableShadows: { value: false },
     cullingDistance: { value: 100, min: 10, max: 500, step: 10 },
     postHeight: { value: 6, min: 1, max: 10, step: 0.5 },
-    postCount: { value: 3, min: 1, max: 10, step: 1 },
   });
 
-  const lightRefs = useRef([]);
+  const lightRef = useRef();
 
   useFrame(state => {
-    lightRefs.current.forEach((light, index) => {
-      if (light) {
-        const worldPosition = new THREE.Vector3();
-        light.getWorldPosition(worldPosition);
-        const distanceToCamera = worldPosition.distanceTo(state.camera.position);
+    if (lightRef.current) {
+      const worldPosition = new THREE.Vector3();
+      lightRef.current.getWorldPosition(worldPosition);
+      const distanceToCamera = worldPosition.distanceTo(state.camera.position);
 
-        light.intensity = distanceToCamera < cullingDistance ? power / postCount : 0;
-      }
-    });
+      lightRef.current.intensity = distanceToCamera < cullingDistance ? power : 0;
+    }
   });
+
+  const lightTarget = new THREE.Object3D();
+  lightTarget.position.set(-roadWidth/2, 0, 0);
 
   return (
     <group>
-      {Array.from({length: postCount}).map((_, index) => {
-        const z = (index / (postCount - 1) - 0.5) * 100;
-        const lightTarget = new THREE.Object3D();
-        lightTarget.position.set(-roadWidth/2, 0, 0);
-
-        return (
-          <group key={index} position={[roadWidth / 2, 0, z]}>
-            <mesh position={[0, postHeight / 2, 0]}>
-              <boxGeometry args={[0.2, postHeight, 0.2]}/>
-              <meshStandardMaterial color="white"/>
-            </mesh>
-            <primitive object={lightTarget} />
-            <SpotLight
-              ref={el => lightRefs.current[index] = el}
-              position={[0, postHeight, 0]}
-              target={lightTarget}
-              angle={angle}
-              penumbra={penumbra}
-              power={power / postCount}
-              distance={distance}
-              attenuation={attenuation}
-              anglePower={anglePower}
-              color="white"
-              castShadow={enableShadows}
-              decay={decay}
-            />
-          </group>
-        );
-      })}
+      <group position={[roadWidth / 2, 0, 0]}>
+        <mesh position={[0, postHeight / 2, 0]}>
+          <boxGeometry args={[0.2, postHeight, 0.2]}/>
+          <meshStandardMaterial color="white"/>
+        </mesh>
+        <primitive object={lightTarget} />
+        <SpotLight
+          ref={lightRef}
+          position={[0, postHeight, 0]}
+          target={lightTarget}
+          angle={angle}
+          penumbra={penumbra}
+          power={power}
+          distance={distance}
+          attenuation={attenuation}
+          anglePower={anglePower}
+          color="red"
+          castShadow={enableShadows}
+          decay={decay}
+        />
+      </group>
     </group>
   );
 });
@@ -289,17 +305,19 @@ export function SpaceHighway() {
     removeSegmentDistance,
     roadFrequency,
     archFrequency,
-    markerFrequency,
+    lineFrequency,
+    postLightFrequency, // New control
     roadWidth,
   } = useControls('Space Highway', {
-    speed: { value: 20, min: 0, max: 1000, step: 5 },
+    speed: { value: 500, min: 0, max: 1000, step: 5 },
     segmentLength: { value: 100, min: 50, max: 200, step: 10 },
     addSegmentDistance: { value: 1000, min: 50, max: 1000, step: 50 },
     removeSegmentDistance: { value: 100, min: 50, max: 200, step: 10 },
     roadFrequency: { value: 1, min: 1, max: 10, step: 1 },
-    archFrequency: { value: 2, min: 1, max: 10, step: 1 },
-    markerFrequency: { value: 5, min: 1, max: 20, step: 1 },
-    roadWidth: { value: 200, min: 10, max: 500, step: 1 },
+    archFrequency: { value: 8, min: 1, max: 10, step: 1 },
+    lineFrequency: { value: 3, min: 1, max: 20, step: 1 }, // renamed
+    postLightFrequency: { value: 4, min: 1, max: 20, step: 1 }, // New control
+    roadWidth: { value: 100, min: 10, max: 500, step: 1 },
   }, { collapsed: true });  // This collapses the main folder
 
   const groupRef = useRef();
@@ -349,23 +367,35 @@ export function SpaceHighway() {
     });
   });
 
+  const bloomParams = useControls('Space Highway.Bloom Effect', {
+    bloomIntensity: { value: 1, min: 0, max: 5, step: 0.1 },
+    bloomThreshold: { value: 0.8, min: 0, max: 1, step: 0.01 },
+    bloomRadius: { value: 0.5, min: 0, max: 1, step: 0.01 },
+    bloomMipmapBlur: { value: false },
+  }, { collapsed: true });
+
   return (
-    <group ref={groupRef}>
-      {segments.map(segment => (
-        <group key={segment.id} position={segment.position}>
-          {segment.id % roadFrequency === 0 && <RoadSegment width={roadWidth} />}
-          {segment.id % archFrequency === 0 && <BrutalistArch roadWidth={roadWidth} />}
-          <RoadMarker
-            position={[
-              segment.id % 2 === 0
-                ? (roadWidth/2 - 0.25)    // Right side for even IDs
-                : -(roadWidth/2 - 0.25),  // Left side for odd IDs
-              0.1,
-              0
-            ]}
-          />
-        </group>
-      ))}
-    </group>
+    <>
+      <group ref={groupRef}>
+        {segments.map(segment => (
+          <group key={segment.id} position={segment.position}>
+            {segment.id % roadFrequency === 0 && <RoadSegment width={roadWidth} />}
+            {segment.id % archFrequency === 0 && <BrutalistArch roadWidth={roadWidth} />}
+            {segment.id % lineFrequency === 0 && <LaneMarkers roadWidth={roadWidth} />}
+
+          </group>
+        ))}
+      </group>
+
+      {/*<EffectComposer>*/}
+      {/*  <Bloom*/}
+      {/*    mipmapBlur={bloomParams.bloomMipmapBlur}*/}
+      {/*    intensity={bloomParams.bloomIntensity}*/}
+      {/*    luminanceThreshold={bloomParams.bloomThreshold}*/}
+      {/*    luminanceSmoothing={0.9}*/}
+      {/*    radius={bloomParams.bloomRadius}*/}
+      {/*  />*/}
+      {/*</EffectComposer>*/}
+    </>
   );
 }

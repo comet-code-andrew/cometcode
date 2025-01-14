@@ -15,7 +15,7 @@ function Scene() {
       name: "Free Camera"
     },
     RACING: {
-      position: new THREE.Vector3(0, 3, 2),
+      position: new THREE.Vector3(0, 3.75, 2),
       target: new THREE.Vector3(0, 0, -20),
       name: "Racing View"
     },
