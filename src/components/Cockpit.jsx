@@ -1,13 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react'
-import { useLoader } from '@react-three/fiber'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
+import {useLoader, useThree} from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import {OrbitControls, TransformControls} from '@react-three/drei'
+import {Html, OrbitControls, TransformControls} from '@react-three/drei'
 import { Color, Vector3 } from 'three'
+import {useControls} from "leva";
 
 export function Cockpit(props) {
   const { scene } = useLoader(GLTFLoader, '/testv5.glb')
   const [hoveredMesh, setHoveredMesh] = useState(null)
   const [clickedMesh, setClickedMesh] = useState(null)
+  const {gl} = useThree();
+
 
   const highlightColor = new Color(0x00ff00)
   const clickedColor = new Color(0xff0000)
@@ -15,6 +18,17 @@ export function Cockpit(props) {
   const pressDistance = .10  // Adjust as needed
   const pressDuration = 100   // Milliseconds
   const originalPositions = useRef({})
+
+  const parameter_options = useMemo(() => {
+    return {
+      x: {value: 0, min: -10, max: 10, step: .1},
+      y: {value: 1.49, min: -10, max: 10, step: .001},
+      z: {value: -2.4, min: -10, max: 10, step: .1},
+      distance: {value: 0.7, min: -10, max: 10, step: .1},
+      rotationX: {value: -1.0, min: -Math.PI, max: Math.PI, step: 0.01}, // New: rotation around X-axis
+    }
+  }, [])
+  const parameters = useControls('Tablet controls', parameter_options)
 
   const handlePointerOver = (e) => {
     e.stopPropagation()
@@ -38,8 +52,6 @@ export function Cockpit(props) {
     setTimeout(() => setClickedMesh(null), pressDuration);
 
   }
-
-
 
   scene.traverse((child) => {
     if (child.isMesh) {
@@ -105,9 +117,6 @@ export function Cockpit(props) {
     }
   };
 
-
-
-
   const pressButton = (mesh) => {
     const originalPosition = originalPositions.current[mesh.uuid]
     if (!originalPosition) return
@@ -126,8 +135,8 @@ export function Cockpit(props) {
 
   return (
     <>
-    <OrbitControls/>
-    <TransformControls>
+    {/*<OrbitControls/>*/}
+    {/*<TransformControls>*/}
       <primitive
         object={scene}
         {...props}
@@ -136,7 +145,25 @@ export function Cockpit(props) {
         onClick={handleClick}
 
       />
-    </TransformControls>
+    {/*</TransformControls>*/}
+      <Html
+        transform
+        wrapperClass="htmlScreen"
+        distanceFactor={parameters.distance}
+        portal={{current: gl.domElement.parentNode}}
+        position={[parameters.x, parameters.y, parameters.z]}
+        rotation={[parameters.rotationX, 0, 0]} // Apply rotation
+        occlude={"blending"}
+        receiveShadow={true}
+        prepend={true}
+        zIndexRange={[100, 0]}
+        calculatePosition={(el, camera, size) => {
+          return [parameters.x, parameters.y, parameters.z]
+        }}
+      >
+            <iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>
+
+      </Html>
     </>
   )
 }

@@ -7,10 +7,11 @@ import {OrbitControls} from "@react-three/drei";
 
 function Scene() {
   const { camera } = useThree()
+  const cameraRef = useRef()
 
   const VIEWS = {
     FREE: {
-      position: new THREE.Vector3(0, 3, 2),
+      position: new THREE.Vector3(0, 3.75, 2),
       target: new THREE.Vector3(0, 0, -20),
       name: "Free Camera"
     },
@@ -20,7 +21,7 @@ function Scene() {
       name: "Racing View"
     },
     TABLET: {
-      position: new THREE.Vector3(0, 4, -0),
+      position: new THREE.Vector3(0, 4, 0),
       target: new THREE.Vector3(0, 0, -3),
       name: "Tablet View"
     }
@@ -33,21 +34,35 @@ function Scene() {
         [VIEWS.RACING.name]: 'RACING',
         [VIEWS.TABLET.name]: 'TABLET'
       },
-      value: 'FREE' // Set FREE as default
+      value: 'FREE'
     }
   })
 
-  useFrame(() => {
-    if (currentView !== 'FREE') {
-      const view = VIEWS[currentView];
-
-      // Update camera position and look-at only for fixed views
-      camera.position.copy(view.position);
-      camera.lookAt(view.target);
-      camera.updateProjectionMatrix();
+  useEffect(() => {
+    cameraRef.current = {
+      position: camera.position.clone(),
+      target: new THREE.Vector3()
     }
-    // When in FREE mode, do nothing - allowing manual camera control
-  });
+    camera.getWorldDirection(cameraRef.current.target).add(camera.position)
+  }, [camera])
+
+  useFrame((state, delta) => {
+    if (currentView !== 'FREE') {
+      const view = VIEWS[currentView]
+
+      const lerpFactor = 3 * delta // Adjust for smooth transition speed
+
+      // Smoothly transition camera position
+      cameraRef.current.position.lerp(view.position, lerpFactor)
+      camera.position.copy(cameraRef.current.position)
+
+      // Smoothly transition camera target
+      cameraRef.current.target.lerp(view.target, lerpFactor)
+      camera.lookAt(cameraRef.current.target)
+
+      camera.updateProjectionMatrix()
+    }
+  })
 
   return (
     <>

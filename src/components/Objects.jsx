@@ -166,8 +166,8 @@ function Objects() {
       {/*    prepend={true}*/}
       {/*    zIndexRange={[100, 0]}*/}
       {/*  >*/}
-      {/*    /!*<iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>*!/*/}
-      {/*    <iframe src="http://localhost:3001"/>*/}
+      {/*    <iframe src="http://cometcoder.com.s3-website-us-west-1.amazonaws.com/"/>*/}
+      {/*    /!*<iframe src="http://localhost:3001"/>*!/*/}
 
       {/*  </Html>*/}
       {/*  <primitive scale={2} object={tablet.scene} position={[0, -height * 1, 1]}>*/}

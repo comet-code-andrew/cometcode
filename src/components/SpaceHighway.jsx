@@ -328,8 +328,8 @@ const RoadSegment = React.memo(({ width }) => {
       {createWall(false)}
       {createWallMarkers(true)}
       {createWallMarkers(false)}
-      {createWallLights(true)}
-      {createWallLights(false)}
+      {/*{createWallLights(true)}*/}
+      {/*{createWallLights(false)}*/}
     </group>
   );
 });
@@ -536,8 +536,6 @@ export function SpaceHighway() {
             {segment.id % roadFrequency === 0 && <RoadSegment width={roadWidth}/>}
             {segment.id % archFrequency === 0 && <BrutalistArch roadWidth={roadWidth}/>}
             {segment.id % lineFrequency === 0 && <LaneMarkers roadWidth={roadWidth}/>}
-
-
           </group>
         ))}
       </group>
